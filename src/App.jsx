@@ -1,8 +1,8 @@
 import './App.css'
-
+import Dashboard from './pages/Dashbord'
 function App() {
     return(<>
-    Hello World
+        <Dashboard />
     </>)
 }
 
