@@ -30,7 +30,8 @@ const NAV_LINKS = [
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
   { label: "Experience", href: "#experience" },
-  { label: "Blog", href: "#blog" },
+  { label: "Certificate", href: "#certificate" },
+  { label: "CV", href: "#cv" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -122,18 +123,20 @@ function HireMeButton() {
   }
 
   return (
-    <button
+    <a
       ref={btnRef}
       onClick={handleRipple}
-      className="relative overflow-hidden px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-sm font-semibold text-white bg-blue-600 dark:bg-blue-500 shadow-[0_0_12px_2px_rgba(37,99,235,0.5)] hover:shadow-[0_0_20px_4px_rgba(37,99,235,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/60 whitespace-nowrap shrink-0"
+      href="#contact"
+      className="hire-me-button relative overflow-hidden px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-full text-[11px] sm:text-sm font-semibold text-white bg-blue-600 dark:bg-blue-500 shadow-[0_0_12px_2px_rgba(37,99,235,0.5)] hover:shadow-[0_0_20px_4px_rgba(37,99,235,0.7)] hover:scale-105 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/60 whitespace-nowrap shrink-0"
       aria-label="Hire me – open contact form"
     >
       <span
         aria-hidden="true"
         className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] hover:translate-x-[200%] transition-transform duration-700"
       />
-      Hire Me ✦
-    </button>
+      <span className="hire-label">Hire Me</span><span className="hire-spark">✦</span>
+      <span className="hire-pulse" aria-hidden="true" />
+    </a>
   );
 }
 
@@ -206,7 +209,7 @@ export default function Header() {
       setScrolled(scrollY > 30);
       setScrollProgress(docH > 0 ? Math.min((scrollY / docH) * 100, 100) : 0);
 
-      const anchors = ["#hero", "#about", "#skills", "#projects", "#experience", "#blog", "#contact"];
+      const anchors = ["#hero", "#about", "#skills", "#projects", "#experience", "#certificate", "#cv", "#contact"];
       let current = "#hero";
       for (const id of anchors) {
         const el = document.querySelector(id);
@@ -293,6 +296,14 @@ export default function Header() {
               <div className="hidden min-[1000px]:flex items-center gap-3">
                 <DarkModeToggle dark={dark} onToggle={toggleDark} />
                 <OpenToWorkBadge />
+                <a
+                  href="https://drive.google.com/file/d/1feWlmmwJs86ty1Wqy2T21sFix766fiyy/view?usp=sharing"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="header-cv-link"
+                >
+                  View CV ↗
+                </a>
               </div>
 
               {/* Hire Me CTA (Visible on both desktop & mobile) */}
@@ -336,6 +347,15 @@ export default function Header() {
               <div className="pt-2 pb-1 px-1">
                 <OpenToWorkBadge />
               </div>
+
+              <a
+                href="https://drive.google.com/file/d/1feWlmmwJs86ty1Wqy2T21sFix766fiyy/view?usp=sharing"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-blue-600 dark:text-blue-300 border border-blue-300/60 dark:border-blue-400/30 hover:bg-blue-500/10 transition-colors"
+              >
+                View my CV <span>↗</span>
+              </a>
 
               {/* Dark Mode Toggle (Moved to dropdown for mobile) */}
               <div className="flex items-center justify-between px-2 py-3 mt-1 border-t dark:border-white/10 border-gray-200">
