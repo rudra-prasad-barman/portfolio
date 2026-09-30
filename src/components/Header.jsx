@@ -175,15 +175,16 @@ function HamburgerButton({ open, onToggle }) {
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(() => {
+    const storedDark = localStorage.getItem("rp-dark");
+    return storedDark === null ? true : storedDark === "true";
+  });
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#hero");
   const headerRef = useRef(null);
+  const scrollFrameRef = useRef({ id: 0 });
 
   useEffect(() => {
-    const storedDark = localStorage.getItem("rp-dark");
-    if (storedDark !== null) setDark(storedDark === "true");
-
     if (!document.getElementById("rp-keyframes")) {
       const style = document.createElement("style");
       style.id = "rp-keyframes";
@@ -201,25 +202,39 @@ export default function Header() {
   }, [dark]);
 
   useEffect(() => {
+    const anchors = ["#hero", "#about", "#skills", "#projects", "#experience", "#certificate", "#cv", "#contact"]
+      .map((id) => document.querySelector(id))
+      .filter(Boolean);
+    const frameState = scrollFrameRef.current;
     function onScroll() {
-      const scrollY = window.scrollY;
-      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      if (frameState.id) return;
+      // The mutable frame token prevents a burst of scroll events from queuing duplicate work.
+      // oxlint-disable-next-line react/immutability
+      frameState.id = window.requestAnimationFrame(() => {
+        // oxlint-disable-next-line react/immutability
+        frameState.id = 0;
+        const scrollY = window.scrollY;
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        const nextScrolled = scrollY > 30;
+        const nextProgress = docH > 0 ? Math.min((scrollY / docH) * 100, 100) : 0;
 
-      // Triggers the "float" animation
-      setScrolled(scrollY > 30);
-      setScrollProgress(docH > 0 ? Math.min((scrollY / docH) * 100, 100) : 0);
+        setScrolled((value) => value === nextScrolled ? value : nextScrolled);
+        setScrollProgress((value) => Math.abs(value - nextProgress) < 0.1 ? value : nextProgress);
 
-      const anchors = ["#hero", "#about", "#skills", "#projects", "#experience", "#certificate", "#cv", "#contact"];
-      let current = "#hero";
-      for (const id of anchors) {
-        const el = document.querySelector(id);
-        if (el && el.getBoundingClientRect().top <= 80) current = id;
-      }
-      setActiveSection(current);
+        let current = "#hero";
+        for (const anchor of anchors) {
+          if (anchor.getBoundingClientRect().top <= 80) current = `#${anchor.id}`;
+        }
+        setActiveSection((value) => value === current ? value : current);
+      });
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frameState.id) window.cancelAnimationFrame(frameState.id);
+    };
   }, []);
 
   useEffect(() => {
@@ -239,8 +254,8 @@ export default function Header() {
     e.preventDefault();
     setMenuOpen(false);
     const target = document.querySelector(href);
-    if (target) target.scrollIntoView({ behavior: "smooth" });
-    else window.location.hash = href;
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth" });
     setActiveSection(href);
   }
 

@@ -103,7 +103,7 @@ function CodeConsole() {
         setVisibleCode(source.slice(0, character));
         if (character <= 0) deleting = false;
       }
-      timer = window.setTimeout(tick, deleting ? 22 : 42);
+      timer = window.setTimeout(tick, deleting ? 35 : 58);
     };
     timer = window.setTimeout(tick, 300);
     return () => window.clearTimeout(timer);
